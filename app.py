@@ -130,7 +130,6 @@ elif choice == 'Prediction':
                         no_veh,
                         no_injuries,
                         no_serious_injuries,
-                        no_fatalities,
                         get_value(junc, junction_dict),
                         get_value(attention, yes_no),
                         get_value(drunken, yes_no),
