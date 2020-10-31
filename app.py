@@ -1,4 +1,5 @@
 from logging import warning
+from joblib.numpy_pickle import load
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,16 +36,26 @@ def load_model(model_file):
 
 
 if choice == 'Home':
-    st.header("About Road Severity Prediction")
+    st.header("Agenda")
+    st.write("""The Seattle government is going to prevent avoidable car accidents by employing methods that alert drivers, 
+                health system, and police to remind them to be more careful in critical situations.
+                In most cases, not paying enough attention during driving, abusing drugs and alcohol or driving at very high speed are 
+                the main causes of occurring accidents that can be prevented by enacting harsher regulations. 
+                \n Besides the aforementioned reasons, weather, visibility, or road conditions are the major uncontrollable factors that can 
+                be prevented by revealing hidden patterns in the data and announcing warning to the local government, police and drivers on 
+                the targeted roads.
+                \n The target audience of the project is local Seattle government, police, rescue groups, and last but not 
+                least, car insurance institutes. The model and its results are going to provide some advice for the target audience to make 
+                insightful decisions for reducing the number of accidents and injuries for the city""")
 
 elif choice == 'Plots':
     st.markdown("<div style='background-color:lightblue;'><h3 style='text-align:center; font-size:30px'><b>Data Visualization</b></h3></div>", unsafe_allow_html=True)
-
+    
     df = pd.read_csv("data/data_cleaned.csv", usecols=['ADDRTYPE','SEVERITYCODE','COLLISIONTYPE','JUNCTIONTYPE','UNDERINFL','WEATHER','ROADCOND','LIGHTCOND','SPEEDING','year'])
     # df['SEVERITYCODE'].replace(2,1,inplace=True)
     # df['SEVERITYCODE'].replace(3,2,inplace=True)
     df['SEVERITYCODE'].replace(4,3,inplace=True)
-    st.dataframe(df.head())
+    st.dataframe(df.head(10))
 
     if st.checkbox("Show severities code bar graph"):
         fig = plt.figure()
@@ -99,16 +110,16 @@ elif choice == 'Prediction':
         # <-------------------Inputs---------------------------->
             addrtype = st.radio("What was in front of you!", tuple(address_dict.keys())) 
             col_type = st.radio("What was the Collision type", tuple(collision_type.keys()))
-            no_person = st.slider("Person involved in accident",min_value=1, max_value=50)
+            no_person = st.slider("Person involved in accident",min_value=0, max_value=50)
             no_ped = st.slider("Pedestrians involved in accident",min_value=0, max_value=6)
             no_cycle = st.slider("Cycles involved in accident",min_value=0, max_value=2)
             no_veh = st.slider("Number of vehicles involved in accident",min_value=0, max_value=15)
             junc = st.radio('What kind of junction is in front of you', tuple(junction_dict.keys()))
-            attention = st.radio('Driver is attentive or not', tuple(yes_no.keys()))
+            attention = st.radio('Collision happened due to inattention', tuple(yes_no.keys()))
             no_injuries = st.slider("Number of Injured people",min_value=0, max_value=100)
    
         with mid:
-            pass
+            st.markdown("<div style='display:flex; justify-content:center;'> <div style='border-left:2px solid black; height:1300px'></div></div>.", unsafe_allow_html=True)
             
         with right:
             drunken = st.radio('Driver is drunken or not', tuple(yes_no.keys()))
@@ -142,7 +153,8 @@ elif choice == 'Prediction':
         ]
 
         single_sample = np.array(feature_list).reshape(1,-1)
-        st.code(feature_list)
+        st.write("Sample",single_sample) 
+        # st.code(feature_list)
 
         model_choice = st.selectbox("Select Model",["Logistic Regression","KNN","XGBoost Classifier","Decision Tree Classifier", "Random Forest Classifier"])
         st.write(" ")
@@ -150,34 +162,51 @@ elif choice == 'Prediction':
             if model_choice == "Logistic Regression":
                 loaded_model = load_model('models/log_reg_model.pkl')
                 prediction = loaded_model.predict(single_sample)
-                st.write(model_choice,':',prediction)
+                prob = loaded_model.predict_proba(single_sample)
+                # st.write(model_choice,':',prediction)
+
 
             elif model_choice == "KNN":
                 loaded_model = load_model('models/knn_model.pkl')
                 prediction = loaded_model.predict(single_sample)
-                st.write(model_choice,':',prediction)
+                # st.write(model_choice,':',prediction)
+                prob = loaded_model.predict_proba(single_sample)
+
 
             elif model_choice == "XGBoost Classifier":
                 loaded_model = load_model('models/xgb_model.pkl')
                 
                 prediction = loaded_model.predict(single_sample)
-                st.write(model_choice,':',prediction)
+                # st.write(model_choice,':',prediction)
 
             elif model_choice == "Decision Tree Classifier":
                 loaded_model = load_model('models/dtc_model.pkl')
                 prediction = loaded_model.predict(single_sample)
-                st.write(model_choice,':',prediction)
+                # st.write(model_choice,':',prediction)
+                prob = loaded_model.predict_proba(single_sample)
+
             # elif model_choice == "Random Forest Classifier":
             else: 
                 loaded_model = load_model('models/rf_model.pkl')
                 prediction = loaded_model.predict(single_sample)
-                st.write(model_choice,':',prediction)
+                # st.write(model_choice,':',prediction)
+                prob = loaded_model.predict_proba(single_sample)
+
         
             # if prediction == 4:
             #     st.warning("Fatality")
             if prediction == 3:
                 st.error("💀 Serious Injuries")
+                st.write("Probability : {}%".format( round((prob[:,2]*100)[0],2) ))
+                
+
             elif prediction == 2:
-                st.warning("🤕 Mild Injuries")    
+                st.warning("🤕 Mild Injuries")
+                st.write("Probability : {}%".format( round((prob[:,1]*100)[0],2) ))
+
+
             elif prediction == 1:
-                st.info("💥🚗 Property damage only.")                            
+                st.info("💥🚗 Property damage only.")
+                # probility = prob[:,0]*100
+                st.write("Probability : {}%".format( round((prob[:,0]*100)[0],2) ))
+
