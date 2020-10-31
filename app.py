@@ -118,7 +118,7 @@ elif choice == 'Prediction':
             ped_grnt = st.radio('Pedestrain right of way was given or not', tuple(yes_no.keys()))
             veh_speed = st.radio('Whether vehicle was in speed or not', tuple(yes_no.keys()))
             veh_park = st.radio('Does moving vehicle hit any parked vehicle', tuple(yes_no.keys()))
-            no_fatalities = st.slider("Number of Fatalities",min_value=0, max_value=50)
+            # no_fatalities = st.slider("Number of Fatalities",min_value=0, max_value=50)
             no_serious_injuries = st.slider("Number of serious injured people",min_value=0, max_value=50)
             
         feature_list = [
