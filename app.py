@@ -119,7 +119,7 @@ elif choice == 'Prediction':
             no_injuries = st.slider("Number of Injured people",min_value=0, max_value=100)
    
         with mid:
-            st.markdown("<div style='display:flex; justify-content:center;'> <div style='border-left:2px solid black; height:1300px'></div></div>.", unsafe_allow_html=True)
+            pass
             
         with right:
             drunken = st.radio('Driver is drunken or not', tuple(yes_no.keys()))
