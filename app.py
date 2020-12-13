@@ -9,6 +9,7 @@ from data_dict import *
 import joblib
 import os
 
+st.beta_set_page_config(page_title='Severity Prediction', page_icon = '🚘',  initial_sidebar_state = 'auto')
 st.markdown("<div style='background-color:black;'><h3 style='text-align:center; font-size:40px;color:white'><b>Road Collision Severity Prediction</b></h3></div>", unsafe_allow_html=True)
 st.header("Seattle Department of Transportation")
 
