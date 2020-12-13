@@ -198,16 +198,16 @@ elif choice == 'Prediction':
             #     st.warning("Fatality")
             if prediction == 3:
                 st.error("💀 Serious Injuries")
-                st.write("Probability : {}%".format( round((prob[:,2]*100)[0],2) ))
+                # st.write("Probability : {}%".format( round((prob[:,2]*100)[0],2) ))
                 
 
             elif prediction == 2:
                 st.warning("🤕 Mild Injuries")
-                st.write("Probability : {}%".format( round((prob[:,1]*100)[0],2) ))
+                # st.write("Probability : {}%".format( round((prob[:,1]*100)[0],2) ))
 
 
             elif prediction == 1:
                 st.info("💥🚗 Property damage only.")
                 # probility = prob[:,0]*100
-                st.write("Probability : {}%".format( round((prob[:,0]*100)[0],2) ))
+                # st.write("Probability : {}%".format( round((prob[:,0]*100)[0],2) ))
 
